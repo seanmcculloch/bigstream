@@ -13,6 +13,8 @@ def serialize_slices(lst):
     for item in lst:
         if isinstance(item, slice):
             item = f"slice({item.start}, {item.stop}, {item.step})"
+        elif isinstance(item, list):
+            item = serialize_slices(item)
         new_lst.append(item)
     return new_lst
 
@@ -199,20 +201,30 @@ def prepare_distributed_piecewise_alignment_pipeline(
     print('indicies type: ', type(indices), flush=True)
     
     
-    # Convert numpy arrays to list
-    nblocks_list = nblocks.tolist() if isinstance(nblocks, np.ndarray) else nblocks
-    blocksize_list = blocksize.tolist() if isinstance(blocksize, np.ndarray) else blocksize
-    overlaps_list = overlaps.tolist() if isinstance(overlaps, np.ndarray) else overlaps
-    
     print('starting write of pipeline config to json file', flush=True)
     pipeline_config = {
         'steps': serialize_slices(steps),
         'indices': serialize_slices(indices),
-        'blocksize': serialize_slices(blocksize_list),
-        'overlaps': serialize_slices(overlaps_list),
-        'nblocks': serialize_slices(nblocks_list),
     }
     
+    try:
+        np.savetxt('/results/blocksize.txt', blocksize)
+    except: pass
+    try:
+        np.save('/results/blocksize.npy', blocksize)
+    except: pass
+    try:
+        np.savetxt('/results/overlaps.txt', overlaps)
+    except: pass
+    try:
+        np.save('/results/overlaps.npy', overlaps)
+    except: pass
+    try:
+        np.savetxt('/results/nblocks.txt', nblocks)
+    except: pass
+    try:
+        np.save('/results/nblocks.npy', nblocks)
+    except: pass
     
     
     print('writing pipeline config to json file', flush=True)
