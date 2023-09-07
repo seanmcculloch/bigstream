@@ -208,9 +208,9 @@ def prepare_distributed_piecewise_alignment_pipeline(
     pipeline_config = {
         'steps': serialize_slices(steps),
         'indices': serialize_slices(indices),
-        'blocksize': blocksize_list,
-        'overlaps': overlaps_list,
-        'nblocks': nblocks_list,
+        'blocksize': serialize_slices(blocksize_list),
+        'overlaps': serialize_slices(overlaps_list),
+        'nblocks': serialize_slices(nblocks_list),
     }
     
     
