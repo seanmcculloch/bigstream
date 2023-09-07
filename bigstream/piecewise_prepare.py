@@ -8,6 +8,14 @@ import time
 import json
 
 
+def serialize_slices(lst):
+    new_lst = []
+    for item in lst:
+        if isinstance(item, slice):
+            item = f"slice({item.start}, {item.stop}, {item.step})"
+        new_lst.append(item)
+    return new_lst
+
 def prepare_distributed_piecewise_alignment_pipeline(
     fix,
     mov,
@@ -198,8 +206,8 @@ def prepare_distributed_piecewise_alignment_pipeline(
     
     print('starting write of pipeline config to json file', flush=True)
     pipeline_config = {
-        'steps': steps,
-        'indices': indices,
+        'steps': serialize_slices(steps),
+        'indices': serialize_slices(indices),
         'blocksize': blocksize_list,
         'overlaps': overlaps_list,
         'nblocks': nblocks_list,
