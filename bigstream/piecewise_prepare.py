@@ -6,6 +6,7 @@ from bigstream.transform import apply_transform_to_coordinates
 from bigstream.align import alignment_pipeline
 import time
 import json
+import pickle
 
 
 def serialize_slices(lst):
@@ -195,10 +196,13 @@ def prepare_distributed_piecewise_alignment_pipeline(
 
     #print type of all variables
     print("steps type: ", type(steps), flush=True)
+    print(steps, flush=True)
+    
     print("nblocks type: ", type(nblocks), flush=True)
     print('blocksize type: ', type(blocksize), flush=True)
     print('overlaps type: ', type(overlaps), flush=True)
     print('indicies type: ', type(indices), flush=True)
+    print(indices, flush=True)
     
     
     print('starting write of pipeline config to json file', flush=True)
