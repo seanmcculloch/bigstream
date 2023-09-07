@@ -190,6 +190,8 @@ def prepare_distributed_piecewise_alignment_pipeline(
     print('overlaps type: ', type(overlaps), flush=True)
     print('indicies type: ', type(indices), flush=True)
     
+    
+    print('starting write of pipeline config to json file', flush=True)
     pipeline_config = {
         steps: steps,
         indices: indices,
