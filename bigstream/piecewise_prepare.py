@@ -191,13 +191,21 @@ def prepare_distributed_piecewise_alignment_pipeline(
     print('indicies type: ', type(indices), flush=True)
     
     
+    # Convert numpy arrays to list
+    nblocks_list = nblocks.tolist() if isinstance(nblocks, np.ndarray) else nblocks
+    blocksize_list = blocksize.tolist() if isinstance(blocksize, np.ndarray) else blocksize
+    overlaps_list = overlaps.tolist() if isinstance(overlaps, np.ndarray) else overlaps
+    
     print('starting write of pipeline config to json file', flush=True)
     pipeline_config = {
-        steps: steps,
-        indices: indices,
-        blocksize: blocksize,
-        indices: indices,
+        'steps': steps,
+        'indices': indices,
+        'blocksize': blocksize_list,
+        'overlaps': overlaps_list,
+        'nblocks': nblocks_list,
     }
+    
+    
     
     print('writing pipeline config to json file', flush=True)
     
