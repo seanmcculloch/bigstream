@@ -5,6 +5,7 @@ from itertools import product
 from bigstream.transform import apply_transform_to_coordinates
 from bigstream.align import alignment_pipeline
 import time
+import json
 
 
 def prepare_distributed_piecewise_alignment_pipeline(
@@ -188,6 +189,20 @@ def prepare_distributed_piecewise_alignment_pipeline(
     print('blocksize type: ', type(blocksize), flush=True)
     print('overlaps type: ', type(overlaps), flush=True)
     print('indicies type: ', type(indices), flush=True)
+    
+    pipeline_config = {
+        steps: steps,
+        indices: indices,
+        blocksize: blocksize,
+        indices: indices,
+    }
+    
+    #write config out to json file
+    with open('/results/pipeline_config.json', 'w') as f:
+        f.write(json.dumps(pipeline_config))
+        
+    # write blocksize to npy file
+    
     
     # submit all alignments to cluster
     # futures = cluster.client.map(
