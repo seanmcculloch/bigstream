@@ -197,9 +197,13 @@ def prepare_distributed_piecewise_alignment_pipeline(
         indices: indices,
     }
     
+    print('writing pipeline config to json file', flush=True)
+    
     #write config out to json file
     with open('/results/pipeline_config.json', 'w') as f:
         f.write(json.dumps(pipeline_config))
+        
+    print('finished writing pipeline config to json file', flush=True)
         
     # write blocksize to npy file
     
