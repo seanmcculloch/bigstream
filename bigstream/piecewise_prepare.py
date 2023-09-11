@@ -240,7 +240,10 @@ def prepare_distributed_piecewise_alignment_pipeline(
         
     for i, indexed_config in enumerate(indices):
         #write to separate pkl files
-        with open(f'/results/distribute/{str(i)}indices.pkl', 'wb') as f:
+        if not os.path.exists(f'/results/distribute/{str(i)}'):
+            os.makedirs(f'/results/distribute/{str(i)}')
+        
+        with open(f'/results/distribute/{str(i)}/indices.pkl', 'wb') as f:
             pickle.dump(indexed_config, f)
                     
     print('finished writing pipeline config to json file', flush=True)
