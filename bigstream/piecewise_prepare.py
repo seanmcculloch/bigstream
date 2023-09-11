@@ -238,8 +238,13 @@ def prepare_distributed_piecewise_alignment_pipeline(
     with open('/results/pipeline_config.pkl', 'wb') as f:
         pickle.dump(pipeline_config, f)
         
+    for i, indexed_config in enumerate(indices):
+        #write to separate pkl files
+        with open(f'/results/distribute/{str(i)}indices.pkl', 'wb') as f:
+            pickle.dump(indexed_config, f)
+                    
     print('finished writing pipeline config to json file', flush=True)
-        
+    
     # write blocksize to npy file
     
     
