@@ -273,6 +273,7 @@ def align_single_block(
     overlaps,
     indices,
     static_transform_list,
+    temporary_directory=None
 ):
 
     # temporary file paths and create zarr images
@@ -417,5 +418,5 @@ def align_single_block(
     # apply weights
     transform = transform * weights[..., None]
     print("TRANSFORM SHAPE, type: ", transform.shape, transform.dtype, flush=True)
-
+    return transform
 # END CLOSURE
