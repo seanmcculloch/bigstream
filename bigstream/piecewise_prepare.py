@@ -208,7 +208,6 @@ def prepare_distributed_piecewise_alignment_pipeline(
     print('starting write of pipeline config to json file', flush=True)
     pipeline_config = {
         'steps': serialize_slices(steps),
-        'indices': serialize_slices(indices),
     }
     
     try:
@@ -234,10 +233,10 @@ def prepare_distributed_piecewise_alignment_pipeline(
     print('writing pipeline config to json file', flush=True)
     
 
-        # Save to a pickle file
-    with open('/results/pipeline_config.pkl', 'wb') as f:
-        pickle.dump(pipeline_config, f)
-        
+    # Save pipeline_config to a json file
+    with open('/results/pipeline_config.json', 'w') as f:
+        json.dump(pipeline_config, f)    
+
     for i, indexed_config in enumerate(indices):
         #write to separate pkl files
         if not os.path.exists(f'/results/distribute/{str(i)}'):
