@@ -273,6 +273,8 @@ def align_single_block(
     overlaps,
     indices,
     static_transform_list,
+    fix_mask=None,
+    mov_mask=None,
     temporary_directory=None
 ):
 
