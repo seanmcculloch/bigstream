@@ -236,15 +236,19 @@ def prepare_distributed_piecewise_alignment_pipeline(
     # Save pipeline_config to a json file
     with open('/results/pipeline_config.json', 'w') as f:
         json.dump(pipeline_config, f)    
-
+    indices_dict = {}
+    
     for i, indexed_config in enumerate(indices):
         #write to separate pkl files
+        indices_dict[str(i)] = indexed_config[1]
         if not os.path.exists(f'/results/distribute/{str(i)}'):
             os.makedirs(f'/results/distribute/{str(i)}')
         
         with open(f'/results/distribute/{str(i)}/indices.pkl', 'wb') as f:
             pickle.dump(indexed_config, f)
-                    
+    
+    with open(f'/results/indices_dict.pkl', 'wb') as f:
+        pickle.dump(indexed_config, f)              
     print('finished writing pipeline config to json file', flush=True)
     
     # write blocksize to npy file
@@ -421,3 +425,5 @@ def align_single_block(
     print("TRANSFORM SHAPE, type: ", transform.shape, transform.dtype, flush=True)
     return transform
 # END CLOSURE
+
+
