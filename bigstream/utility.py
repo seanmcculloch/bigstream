@@ -8,7 +8,7 @@ import glob
 import h5py
 from ClusterWrap.decorator import cluster
 from zarr import blosc
-
+import dask.array as da
 
 def skip_sample(image, spacing, ss_spacing):
     """
@@ -553,7 +553,7 @@ def numpy_to_zarr(array, chunks, path):
         Reference to the zarr array copy of the given numpy array
     """
 
-    if not isinstance(array, zarr.Array):
+    if not isinstance(array, zarr.Array) and not isinstance(array, da.Array):
         zarr_disk = create_zarr(path, array.shape, chunks, array.dtype)
         zarr_disk[...] = array
         return zarr_disk
