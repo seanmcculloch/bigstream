@@ -553,9 +553,14 @@ def numpy_to_zarr(array, chunks, path):
         Reference to the zarr array copy of the given numpy array
     """
 
-    if not isinstance(array, zarr.Array) and not isinstance(array, da.Array):
+    if not isinstance(array, zarr.Array):
         zarr_disk = create_zarr(path, array.shape, chunks, array.dtype)
-        zarr_disk[...] = array
+        
+        if isinstance(array, da.Array):
+            print("converting dask array to zarr")
+            da.to_zarr(array, zarr_disk)
+        else:
+            zarr_disk[...] = array
         return zarr_disk
     else:
         return array
