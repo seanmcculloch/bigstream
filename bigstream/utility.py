@@ -559,7 +559,7 @@ def numpy_to_zarr(array, chunks, path):
             store = zarr.DirectoryStore(path)
             print("converting dask array to zarr")
             zarr_disk = create_zarr(store, array.shape, chunks, array.dtype)
-            array.to_zarr(store, compute=True)
+            array.to_zarr(zarr_disk, compute=True)
 
         else:
             zarr_disk = create_zarr(path, array.shape, chunks, array.dtype)
