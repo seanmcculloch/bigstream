@@ -554,12 +554,15 @@ def numpy_to_zarr(array, chunks, path):
     """
 
     if not isinstance(array, zarr.Array):
-        zarr_disk = create_zarr(path, array.shape, chunks, array.dtype)
         
         if isinstance(array, da.Array):
+            zarr_disk = create_zarr(path, array.shape, chunks, array.dtype, multithreaded=True)
+
             print("converting dask array to zarr")
             da.to_zarr(array, zarr_disk)
         else:
+            zarr_disk = create_zarr(path, array.shape, chunks, array.dtype)
+
             zarr_disk[...] = array
         return zarr_disk
     else:
