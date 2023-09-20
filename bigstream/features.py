@@ -34,13 +34,13 @@ def blob_detection(
         detected blobs. The last column is the image intensity at the
         detected coordinate location.
     """
-    image = image.astype(np.float32)
+    image = image
     processed_image = np.copy(image)
     if winsorize_limits is not None:
         processed_image = winsorize(processed_image, limits=winsorize_limits)
     if background_subtract:
         processed_image = white_tophat(processed_image, max_blob_radius)
-    processed_image = processed_image.astype(np.float32)
+    processed_image = processed_image
     spots = detect_spots_log(
         processed_image,
         min_blob_radius,

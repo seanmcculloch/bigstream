@@ -403,7 +403,6 @@ def align_single_block(
         # rebalance the weights
         weights = weights / (1 - missing_weights)
         weights[np.isnan(weights)] = 0.  # edges of blocks are 0/0
-        weights = weights.astype(np.float32)
 
     # crop weights if block is on edge of domain
     for i in range(3):
