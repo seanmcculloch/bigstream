@@ -558,7 +558,7 @@ def numpy_to_zarr(array, chunks, path):
         if isinstance(array, da.Array):
             print("converting dask array to zarr")
             store = zarr.DirectoryStore(path)
-            array.to_zarr(store=store, overwrite=True, compute=True)
+            array.to_zarr(store, overwrite=True, compute=True)
             zarr_array = zarr.open(store, mode='r+')
             return zarr_array
 
