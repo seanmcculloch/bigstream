@@ -556,12 +556,11 @@ def numpy_to_zarr(array, chunks, path):
     if not isinstance(array, zarr.Array):
         
         if isinstance(array, da.Array):
-            store = zarr.DirectoryStore(path)
             print("converting dask array to zarr")
-            zarr_disk = create_zarr(store, array.shape, chunks, array.dtype)
-            array.to_zarr(zarr_disk, overwrite=True, compute=True)
-            return zarr_disk
-
+            store = zarr.DirectoryStore(path)
+            array.to_zarr(store=store, overwrite=True, compute=True)
+            zarr_array = zarr.open(store, mode='r+')
+            return zarr_array
 
         else:
             zarr_disk = create_zarr(path, array.shape, chunks, array.dtype)
