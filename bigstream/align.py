@@ -253,9 +253,9 @@ def feature_point_ransac_affine_align(
     # sort
     print('sorting spots', flush=True)
     sort_idx = np.argsort(fix_spots[:, 3])[::-1]
-    fix_spots = fix_spots[sort_idx, :3][:nspots]
+    fix_spots = fix_spots[sort_idx, :3][:nspots].astype(int)
     sort_idx = np.argsort(mov_spots[:, 3])[::-1]
-    mov_spots = mov_spots[sort_idx, :3][:nspots]
+    mov_spots = mov_spots[sort_idx, :3][:nspots].astype(int)
 
     # get contexts
     print('extracting contexts', flush=True)
