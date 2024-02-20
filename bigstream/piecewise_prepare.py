@@ -24,7 +24,6 @@ def prepare_distributed_piecewise_alignment_pipeline(
     mov,
     fix_spacing,
     mov_spacing,
-    steps,
     blocksize,
     overlap=0.5,
     fix_mask=None,
