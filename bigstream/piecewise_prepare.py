@@ -192,23 +192,23 @@ def prepare_distributed_piecewise_alignment_pipeline(
     indices = new_indices
 
     # establish all keyword arguments
-    steps = [(a, {**kwargs, **b}) for a, b in steps]
+    # steps = [(a, {**kwargs, **b}) for a, b in steps]
 
-    #print type of all variables
-    print("steps type: ", type(steps), flush=True)
-    print(steps, flush=True)
+    # #print type of all variables
+    # print("steps type: ", type(steps), flush=True)
+    # print(steps, flush=True)
     
     print("nblocks type: ", type(nblocks), flush=True)
     print('blocksize type: ', type(blocksize), flush=True)
     print('overlaps type: ', type(overlaps), flush=True)
     print('indicies type: ', type(indices), flush=True)
-    print(indices, flush=True)
+    #print(indices, flush=True)
     
     
-    print('starting write of pipeline config to json file', flush=True)
-    pipeline_config = {
-        'steps': serialize_slices(steps),
-    }
+    # print('starting write of pipeline config to json file', flush=True)
+    # pipeline_config = {
+    #     'steps': serialize_slices(steps),
+    # }
     
     try:
         np.savetxt('/results/blocksize.txt', blocksize)
@@ -234,8 +234,8 @@ def prepare_distributed_piecewise_alignment_pipeline(
     
 
     # Save pipeline_config to a json file
-    with open('/results/pipeline_config.json', 'w') as f:
-        json.dump(pipeline_config, f)    
+    # with open('/results/pipeline_config.json', 'w') as f:
+    #     json.dump(pipeline_config, f)    
     indices_dict = {}
     
     for i, indexed_config in enumerate(indices):
