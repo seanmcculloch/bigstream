@@ -277,7 +277,8 @@ def align_single_block(
     static_transform_list,
     fix_mask=None,
     mov_mask=None,
-    temporary_directory=None
+    temporary_directory=None,
+    **kwargs
 ):
 
     # temporary file paths and create zarr images
@@ -370,6 +371,7 @@ def align_single_block(
         fix_mask=fix_mask, mov_mask=mov_mask,
         mov_origin=mov_origin,
         static_transform_list=static_transform_list,
+        **kwargs
     )
 
     # ensure transform is a vector field
