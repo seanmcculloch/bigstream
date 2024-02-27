@@ -14,6 +14,7 @@ def configure_irm(
     sampling_percentage=None,
     exhaustive_step_sizes=None,
     callback=None,
+    end_callback=None,
 ):
     """
     Wrapper exposing the itk::simple::ImageRegistrationMethod API
@@ -107,6 +108,10 @@ def configure_irm(
         Should take only the ImageRegistrationMethod object as input: `irm`
         If None then the Level, Iteration, and Metric values are
         printed at each iteration
+    end_callback : callable object, e.g. function (default: None)
+        A function run the end of optimization via sitkEndEvent
+        Should take only the ImageRegistrationMethod object as input: `irm`
+        If None then no function is called.
 
     Returns
     -------
@@ -194,6 +199,10 @@ def configure_irm(
             print("LEVEL: ", level, " ITERATION: ", iteration, " METRIC: ", metric, flush=True)
     irm.AddCommand(sitk.sitkIterationEvent, lambda: callback(irm))
 
+    if end_callback is not None:
+        irm.AddCommand(sitk.sitkEndEvent, lambda: end_callback(irm))
+
+        
     # return configured irm
     return irm
 
