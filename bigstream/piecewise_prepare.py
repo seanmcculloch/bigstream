@@ -379,7 +379,7 @@ def align_single_block(
         transform = ut.matrix_to_displacement_field(
             transform, fix.shape, spacing=fix_spacing,
         )
-
+    return transform
     # create the standard weight array
     core = tuple(x - 2*y + 2 for x, y in zip(blocksize, overlaps))
     pad = tuple((2*y - 1, 2*y - 1) for y in overlaps)
