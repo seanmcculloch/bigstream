@@ -24,6 +24,7 @@ def prepare_distributed_piecewise_alignment_pipeline(
     mov,
     fix_spacing,
     mov_spacing,
+    output_dir,
     blocksize,
     overlap=0.5,
     fix_mask=None,
@@ -197,10 +198,10 @@ def prepare_distributed_piecewise_alignment_pipeline(
     # print("steps type: ", type(steps), flush=True)
     # print(steps, flush=True)
     
-    print("nblocks type: ", type(nblocks), flush=True)
-    print('blocksize type: ', type(blocksize), flush=True)
-    print('overlaps type: ', type(overlaps), flush=True)
-    print('indicies type: ', type(indices), flush=True)
+    #print("nblocks type: ", type(nblocks), flush=True)
+    #print('blocksize type: ', type(blocksize), flush=True)
+    #print('overlaps type: ', type(overlaps), flush=True)
+    #print('indicies type: ', type(indices), flush=True)
     #print(indices, flush=True)
     
     
@@ -210,22 +211,22 @@ def prepare_distributed_piecewise_alignment_pipeline(
     # }
     
     try:
-        np.savetxt('/results/blocksize.txt', blocksize)
+        np.savetxt(output_dir +'/blocksize.txt', blocksize)
     except: pass
     try:
-        np.save('/results/blocksize.npy', blocksize)
+        np.save(output_dir +'/blocksize.npy', blocksize)
     except: pass
     try:
-        np.savetxt('/results/overlaps.txt', overlaps)
+        np.savetxt(output_dir +'/overlaps.txt', overlaps)
     except: pass
     try:
-        np.save('/results/overlaps.npy', overlaps)
+        np.save(output_dir +'/overlaps.npy', overlaps)
     except: pass
     try:
-        np.savetxt('/results/nblocks.txt', nblocks)
+        np.savetxt(output_dir +'/nblocks.txt', nblocks)
     except: pass
     try:
-        np.save('/results/nblocks.npy', nblocks)
+        np.save(output_dir +'/nblocks.npy', nblocks)
     except: pass
     
     
@@ -240,15 +241,15 @@ def prepare_distributed_piecewise_alignment_pipeline(
     for i, indexed_config in enumerate(indices):
         #write to separate pkl files
         indices_dict[str(i)] = indexed_config[1]
-        if not os.path.exists(f'/results/distribute/{str(i)}'):
-            os.makedirs(f'/results/distribute/{str(i)}')
+        if not os.path.exists(output_dir +f'/distribute/{str(i)}'):
+            os.makedirs(output_dir + f'/distribute/{str(i)}')
         
-        with open(f'/results/distribute/{str(i)}/indices.pkl', 'wb') as f:
+        with open(output_dir + f'/distribute/{str(i)}/indices.pkl', 'wb') as f:
             pickle.dump(indexed_config, f)
     
-    with open(f'/results/indices_dict.pkl', 'wb') as f:
+    with open(output_dir +'/indices_dict.pkl', 'wb') as f:
         pickle.dump(indices_dict, f)              
-    print('finished writing pipeline config to json file', flush=True)
+    #print('finished writing pipeline config to json file', flush=True)
     
     # write blocksize to npy file
     
