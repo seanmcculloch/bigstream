@@ -1030,6 +1030,8 @@ def alignment_pipeline(
                        ['random', 'affine', 'deform', 'deform', 'affine', 'deform']
                        will return a list of 4 transforms.
         'flatten' : compose all transforms regardless of type into a single transform
+        'compose' : compose all transforms regardless of type into a single transform, including transforms
+                    in static_transform_list
 
     **kwargs : any additional keyword arguments
         Global arguments that apply to all alignment steps
@@ -1078,5 +1080,9 @@ def alignment_pipeline(
         F = lambda a, b: compose_transform_list(new_transforms[a:b], fix_spacing)
         return [F(a, b) for a, b in zip(changes[:-1], changes[1:])]
     elif return_format == 'flatten':
+        return compose_transform_list(new_transforms, fix_spacing)
+    elif return_format == 'compose':
+        # compose all, including inital transforms.
+        new_transforms = static_transform_list[:]
         return compose_transform_list(new_transforms, fix_spacing)
 
