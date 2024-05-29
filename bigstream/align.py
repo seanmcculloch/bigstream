@@ -25,6 +25,10 @@ def resolve_sampling(
     """
     Get mask spacings and skip sample all inputs to alignment_spacing
     """
+    
+    # ensure spacings are floating point, and do not modify original
+    fix_spacing = fix_spacing.astype(np.float64)
+    mov_spacing = mov_spacing.astype(np.float64)
 
     # get mask spacings
     fix_mask_spacing = None
