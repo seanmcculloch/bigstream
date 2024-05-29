@@ -1075,6 +1075,7 @@ def alignment_pipeline(
 
     # return in the requested format
     new_transforms = static_transform_list[initial_transform_count:]
+    print("Returning from alignment_pipeline with return format: ", return_format)
     if return_format == 'independent':
         return new_transforms
     elif return_format == 'compressed':
@@ -1087,6 +1088,6 @@ def alignment_pipeline(
         return compose_transform_list(new_transforms, fix_spacing)
     elif return_format == 'compose':
         # compose all, including inital transforms.
-        new_transforms = static_transform_list[:]
-        return compose_transform_list(new_transforms, fix_spacing)
+        all_transforms = static_transform_list[:]
+        return compose_transform_list(all_transforms, fix_spacing)
 
