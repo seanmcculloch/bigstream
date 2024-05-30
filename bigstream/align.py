@@ -1085,9 +1085,11 @@ def alignment_pipeline(
         F = lambda a, b: compose_transform_list(new_transforms[a:b], fix_spacing)
         return [F(a, b) for a, b in zip(changes[:-1], changes[1:])]
     elif return_format == 'flatten':
+        print("Flattening", len(new_transforms), "Transforms")
         return compose_transform_list(new_transforms, fix_spacing)
     elif return_format == 'compose':
         # compose all, including inital transforms.
         all_transforms = static_transform_list[:]
+        print("Composing", len(all_transforms), "Transforms")
         return compose_transform_list(all_transforms, fix_spacing)
 
