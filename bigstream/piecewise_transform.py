@@ -205,7 +205,7 @@ def distributed_apply_transform(
         transform_single_block,
         block_coords,
         transform_list=transform_list,
-        dtype=fix_zarr.dtype,
+        dtype=mov_zarr.dtype,
         chunks=blocksize,
     )
 
