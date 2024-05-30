@@ -97,16 +97,17 @@ def apply_transform(
     # set up resampler object
     resampler = sitk.ResampleImageFilter()
     resampler.SetNumberOfThreads(2*ncores)
+    
+    #always return with moving image dtype
+    dtype = mov.dtype
 
     # set reference data
     if isinstance(fix, tuple):
-        dtype = mov.dtype
         resampler.SetSize(fix[::-1])
         resampler.SetOutputSpacing(fix_spacing[::-1])
         if fix_origin is not None:
             resampler.SetOutputOrigin(fix_origin[::-1])
     else:
-        dtype = fix.dtype
         fix = sitk.Cast(ut.numpy_to_sitk(fix, fix_spacing, fix_origin), sitk.sitkFloat32)
         resampler.SetReferenceImage(fix)
 
