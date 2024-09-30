@@ -386,7 +386,7 @@ def align_single_block(
         # Ensure transform is a vector field
         if single_transform.shape == (4, 4):
             single_transform = ut.matrix_to_displacement_field(
-                single_transform, fix_shape, spacing=fix_spacing,
+                single_transform, fix.shape, spacing=fix_spacing,
             )
 
         # Create the standard weight array
