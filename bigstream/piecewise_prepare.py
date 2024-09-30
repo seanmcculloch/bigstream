@@ -375,57 +375,73 @@ def align_single_block(
         **kwargs
     )
 
-    # ensure transform is a vector field
-    if transform.shape == (4, 4):
-        transform = ut.matrix_to_displacement_field(
-            transform, fix.shape, spacing=fix_spacing,
-        )
+    # Ensure that transform is a list of arrays, 
+    # Required to handle alignment_pipeline being passed return_format='indepedent'
+    if not isinstance(transform, list):
+        transform = [transform]  # Convert transform to a list with one element if it's not already a list
 
-    # create the standard weight array
-    core = tuple(x - 2*y + 2 for x, y in zip(blocksize, overlaps))
-    pad = tuple((2*y - 1, 2*y - 1) for y in overlaps)
-    weights = np.pad(np.ones(core, dtype=np.float64), pad, mode='linear_ramp')
+    processed_transforms = []  # List to store processed transforms
 
-    # rebalance if any neighbors are missing
-    if not np.all(list(neighbor_flags.values())):
+    for single_transform in transform:
+        # Ensure transform is a vector field
+        if single_transform.shape == (4, 4):
+            single_transform = ut.matrix_to_displacement_field(
+                single_transform, fix_shape, spacing=fix_spacing,
+            )
 
-        # define overlap slices
-        slices = {}
-        slices[-1] = tuple(slice(0, 2*y) for y in overlaps)
-        slices[0] = (slice(None),) * len(overlaps)
-        slices[1] = tuple(slice(-2*y, None) for y in overlaps)
+        # Create the standard weight array
+        core = tuple(x - 2*y + 2 for x, y in zip(blocksize, overlaps))
+        pad = tuple((2*y - 1, 2*y - 1) for y in overlaps)
+        weights = np.pad(np.ones(core, dtype=np.float64), pad, mode='linear_ramp')
 
-        missing_weights = np.zeros_like(weights)
-        for neighbor, flag in neighbor_flags.items():
-            if not flag:
-                neighbor_region = tuple(slices[-1*b][a] for a, b in enumerate(neighbor))
-                region = tuple(slices[b][a] for a, b in enumerate(neighbor))
-                missing_weights[region] += weights[neighbor_region]
+        # Rebalance if any neighbors are missing
+        if not np.all(list(neighbor_flags.values())):
 
-        # rebalance the weights
-        weights = weights / (1 - missing_weights)
-        weights[np.isnan(weights)] = 0.  # edges of blocks are 0/0
-        weights = weights.astype(np.float32)
+            # Define overlap slices
+            slices = {}
+            slices[-1] = tuple(slice(0, 2*y) for y in overlaps)
+            slices[0] = (slice(None),) * len(overlaps)
+            slices[1] = tuple(slice(-2*y, None) for y in overlaps)
 
-    # crop weights if block is on edge of domain
-    for i in range(3):
-        region = [slice(None),]*3
-        if block_index[i] == 0:
-            region[i] = slice(overlaps[i], None)
-            weights = weights[tuple(region)]
-        if block_index[i] == nblocks[i] - 1:
-            region[i] = slice(None, -overlaps[i])
-            weights = weights[tuple(region)]
+            missing_weights = np.zeros_like(weights)
+            for neighbor, flag in neighbor_flags.items():
+                if not flag:
+                    neighbor_region = tuple(slices[-1*b][a] for a, b in enumerate(neighbor))
+                    region = tuple(slices[b][a] for a, b in enumerate(neighbor))
+                    missing_weights[region] += weights[neighbor_region]
 
-    # crop any incomplete blocks (on the ends)
-    if np.any( weights.shape != transform.shape[:-1] ):
-        crop = tuple(slice(0, s) for s in transform.shape[:-1])
-        weights = weights[crop]
+            # Rebalance the weights
+            weights = weights / (1 - missing_weights)
+            weights[np.isnan(weights)] = 0.  # edges of blocks are 0/0
+            weights = weights.astype(np.float32)
 
-    # apply weights
-    transform = transform * weights[..., None]
-    print("TRANSFORM SHAPE, type: ", transform.shape, transform.dtype, flush=True)
-    return transform
+        # Crop weights if block is on edge of domain
+        for i in range(3):
+            region = [slice(None),]*3
+            if block_index[i] == 0:
+                region[i] = slice(overlaps[i], None)
+                weights = weights[tuple(region)]
+            if block_index[i] == nblocks[i] - 1:
+                region[i] = slice(None, -overlaps[i])
+                weights = weights[tuple(region)]
+
+        # Crop any incomplete blocks (on the ends)
+        if np.any(weights.shape != single_transform.shape[:-1]):
+            crop = tuple(slice(0, s) for s in single_transform.shape[:-1])
+            weights = weights[crop]
+
+        # Apply weights
+        single_transform = single_transform * weights[..., None]
+        print("TRANSFORM SHAPE, type: ", single_transform.shape, single_transform.dtype, flush=True)
+
+        # Append processed transform to the list
+        processed_transforms.append(single_transform)
+
+    # Return the list of processed transforms
+    if len(processed_transforms) == 1:
+        # Return single transform if only one was returned from the alignment pipeline
+        return processed_transforms[0]
+    return processed_transforms
 # END CLOSURE
 
 
