@@ -1077,7 +1077,8 @@ def alignment_pipeline(
     new_transforms = static_transform_list[initial_transform_count:]
     print("Returning from alignment_pipeline with return format: ", return_format)
     if return_format == 'independent':
-        return new_transforms
+        all_transforms = static_transform_list[:]
+        return all_transforms
     elif return_format == 'compressed':
         shapes = np.array([x.shape for x in new_transforms], dtype=object)
         changes = np.where(shapes[:-1] != shapes[1:])[0] + 1
