@@ -132,7 +132,7 @@ def distributed_apply_transform(
         block_coords[i, j, k] = tuple(slice(x, y) for x, y in zip(start, stop))
     block_coords = da.from_array(block_coords, chunks=(1,)*block_coords.ndim)
 
-    if initial_fix_origin is None: 
+    if fix_origin is None: 
         initial_fix_origin = np.zeros(fix_zarr.ndim)
     else:
         initial_fix_origin = fix_origin
