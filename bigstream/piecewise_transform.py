@@ -19,6 +19,8 @@ def distributed_apply_transform(
     inverse_transforms=False,
     dataset_path=None,
     temporary_directory=None,
+    fix_origin=None,
+    mov_origin=None,
     cluster=None,
     cluster_kwargs={},
     **kwargs,
@@ -130,6 +132,9 @@ def distributed_apply_transform(
         block_coords[i, j, k] = tuple(slice(x, y) for x, y in zip(start, stop))
     block_coords = da.from_array(block_coords, chunks=(1,)*block_coords.ndim)
 
+    initial_fix_origin = fix_origin * fix_spacing or np.zeros(fix_zarr.ndim)
+    initial_mov_origin = mov_origin * mov_spacing or np.zeros(mov_zarr.ndim)
+
     # pipeline to run on each block
     def transform_single_block(coords, transform_list):
 
@@ -170,6 +175,9 @@ def distributed_apply_transform(
         mov_slices = tuple(slice(a, b) for a, b in zip(mov_start, mov_stop))
         mov = mov_zarr[mov_slices]
         mov_origin = mov_spacing * [s.start for s in mov_slices]
+
+        fix_origin = fix_origin + initial_fix_origin
+        mov_origin = mov_origin + initial_mov_origin
 
         # resample
         aligned = cs_transform.apply_transform(
