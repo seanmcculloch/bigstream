@@ -182,8 +182,8 @@ def distributed_apply_transform(
         mov = mov_zarr[mov_slices]
         mov_origin = mov_spacing * [s.start for s in mov_slices]
 
-        fix_origin = fix_origin + initial_fix_origin
-        mov_origin = mov_origin + initial_mov_origin
+        fix_origin = fix_origin - initial_fix_origin
+        mov_origin = mov_origin - initial_mov_origin
 
         # resample
         aligned = cs_transform.apply_transform(
