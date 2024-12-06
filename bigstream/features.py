@@ -1,7 +1,72 @@
 import numpy as np
 from fishspot.filter import white_tophat, apply_foreground_mask
-from fishspot.detect import detect_spots_log
+# from fishspot.detect import detect_spots_log
 from scipy.stats.mstats import winsorize
+
+import numpy as np
+from skimage.feature import blob_log
+
+
+# TODO: potential major improvement - after finding coordinates
+#       with LoG filter, template match the PSF to the region around
+#       each detected point (Fourier Phase Correlation maybe?).
+#       upsample the PSF and data to achieve subvoxel accuracy.
+
+
+def detect_spots_log(
+    image,
+    min_radius,
+    max_radius,
+    num_sigma=5,
+    **kwargs,
+):
+    """
+    """
+
+    # ensure iterable radii
+    if not isinstance(min_radius, (tuple, list, np.ndarray)):
+        min_radius = (min_radius,)*image.ndim
+    if not isinstance(max_radius, (tuple, list, np.ndarray)):
+        max_radius = (max_radius,)*image.ndim
+
+    # set given arguments
+    kwargs['min_sigma'] = np.array(min_radius) / np.sqrt(image.ndim)
+    kwargs['max_sigma'] = np.array(max_radius) / np.sqrt(image.ndim)
+    kwargs['num_sigma'] = num_sigma
+
+    # set additional defaults
+    if 'threshold' not in kwargs or kwargs['threshold'] is None:
+        kwargs['threshold'] = None
+        kwargs['threshold_rel'] = 0.1
+
+    # run
+    #return blob_log(image, **kwargs)
+    return chunked_blob_log(image, **kwargs)
+
+import numpy as np
+from skimage.feature import blob_log
+
+def chunked_blob_log(image, **kwargs): #sigma_list, chunk_size=(128, 128, 128), overlap=(32, 32, 32)):
+    chunk_size=(256, 256, 256), overlap=(64, 64, 64)
+    z_chunks, y_chunks, x_chunks = [
+        range(0, dim, chunk_size[i] - overlap[i])
+        for i, dim in enumerate(image.shape)
+    ]
+    blobs = []
+    
+    for z_start in z_chunks:
+        for y_start in y_chunks:
+            for x_start in x_chunks:
+                z_end = min(z_start + chunk_size[0], image.shape[0])
+                y_end = min(y_start + chunk_size[1], image.shape[1])
+                x_end = min(x_start + chunk_size[2], image.shape[2])
+                
+                chunk = image[z_start:z_end, y_start:y_end, x_start:x_end]
+                chunk_blobs = blob_log(chunk, **kwargs)
+                chunk_blobs[:, :3] += [z_start, y_start, x_start]  # Adjust positions
+                blobs.extend(chunk_blobs)
+    
+    return np.array(blobs)
 
 
 def blob_detection(
