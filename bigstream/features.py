@@ -47,7 +47,8 @@ import numpy as np
 from skimage.feature import blob_log
 
 def chunked_blob_log(image, **kwargs): #sigma_list, chunk_size=(128, 128, 128), overlap=(32, 32, 32)):
-    chunk_size=(256, 256, 256), overlap=(64, 64, 64)
+    chunk_size=(256, 256, 256)
+    overlap=(64, 64, 64)
     z_chunks, y_chunks, x_chunks = [
         range(0, dim, chunk_size[i] - overlap[i])
         for i, dim in enumerate(image.shape)
