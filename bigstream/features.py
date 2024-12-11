@@ -1,6 +1,8 @@
 import numpy as np
 from fishspot.filter import white_tophat, apply_foreground_mask
 
+# from fishspot.detect import detect_spots_log
+
 from scipy.stats.mstats import winsorize
 
 import numpy as np
@@ -42,6 +44,10 @@ def detect_spots_log(
     # run
     #return blob_log(image, **kwargs)
     return chunked_blob_log(image, **kwargs)
+
+
+import numpy as np
+from skimage.feature import blob_log
 
 
 def chunked_blob_log(image, **kwargs): #sigma_list, chunk_size=(128, 128, 128), overlap=(32, 32, 32)):
