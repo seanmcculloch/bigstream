@@ -125,7 +125,7 @@ def apply_transform(
 
     # execute, return as numpy array
     resampled = resampler.Execute(mov)
-    return sitk.GetArrayViewFromImage(resampled).astype(dtype)
+    return np.nan_to_num(sitk.GetArrayViewFromImage(resampled),nan=0.0,posinf=0.0,neginf=0.0).astype(dtype)
 
 
 def apply_transform_to_coordinates(
