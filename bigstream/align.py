@@ -263,8 +263,8 @@ def feature_point_ransac_affine_align(
 
     # get contexts
     print('extracting contexts', flush=True)
-    fix_spot_contexts = features.get_contexts(fix, fix_spots, cc_radius)
-    mov_spot_contexts = features.get_contexts(mov, mov_spots, cc_radius)
+    fix_spots, fix_spot_contexts = features.get_contexts(fix, fix_spots, cc_radius, filter=True)
+    mov_spots, mov_spot_contexts = features.get_contexts(mov, mov_spots, cc_radius, filter=True)
 
     # convert to physical units
     fix_spots = fix_spots * fix_spacing
