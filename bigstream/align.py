@@ -219,6 +219,8 @@ def feature_point_ransac_affine_align(
         mov_spacing = fix_spacing
 
     # get fix spots
+
+    if type(cc_radius) not in (tuple,): cc_radius = (cc_radius,) * fix.ndim
     print('computing fixed spots', flush=True)
     if fix_spots is None:
         fix_kwargs = {
@@ -263,8 +265,8 @@ def feature_point_ransac_affine_align(
 
     # get contexts
     print('extracting contexts', flush=True)
-    fix_spots, fix_spot_contexts = features.get_contexts(fix, fix_spots, cc_radius, filter=True)
-    mov_spots, mov_spot_contexts = features.get_contexts(mov, mov_spots, cc_radius, filter=True)
+    fix_spot_contexts = features.get_contexts(fix, fix_spots, cc_radius)
+    mov_spot_contexts = features.get_contexts(mov, mov_spots, cc_radius)
 
     # convert to physical units
     fix_spots = fix_spots * fix_spacing

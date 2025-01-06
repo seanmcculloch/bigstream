@@ -52,9 +52,9 @@ def blob_detection(
     return np.hstack((spots[:, :3], intensities[..., None]))
 
 
-def get_contexts(image, coords, radius, filter=False):
+def get_contexts(image, coords, radius):
     """
-    Get neighborhoods of a set of coordinates, along with the valid coordinates.
+    Get neighborhoods of a set of coordinates
 
     Parameters
     ----------
@@ -67,27 +67,19 @@ def get_contexts(image, coords, radius, filter=False):
 
     Returns
     -------
-    valid_coords : list of tuples
-        List of the valid coordinates after filtering.
     neighborhoods : list of nd-arrays
-        List of the extracted neighborhoods.
+        List of the extracted neighborhoods
     """
+
+    if isinstance(radius, (int, np.integer)):
+        radius = (radius,) * image.ndim  # Convert scalar radius to ndim radius
+
     contexts = []
-    valid_coords = []
     for coord in coords:
-        crop = tuple(slice(max(0, x - radius), min(dim, x + radius + 1)) for x, dim in zip(coord, image.shape))
-        # Check if the crop dimensions match the expected size
-        if not filter:
-            contexts.append(image[crop])
-        elif all(crop[dim].stop - crop[dim].start == 2 * radius + 1 for dim in range(len(crop))):
-            contexts.append(image[crop])
-            valid_coords.append(coord)
+        crop = tuple(slice(int(x - r), int(x + r + 1)) for x, r in zip(coord, radius))
+        contexts.append(image[crop])
+    return contexts      
 
-
-    if not filter:
-        return contexts
-    else:
-        return valid_coords, contexts
 
 def _stats(arr):
     """
