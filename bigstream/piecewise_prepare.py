@@ -268,20 +268,23 @@ def prepare_distributed_piecewise_alignment_pipeline(
 
 
 def get_non_empty_indices(indices, mov, mov_mask):
-    # determine the indices of the non-empty blocks in the moving image
+    # Determine the indices of the non-empty blocks in the moving image
     non_empty_indices = []
     for index, coords, neighbor_flags in indices:
-        start, stop = coords[0], coords[-1]  # Assuming coords are tuple pairs of (start, stop)
+        # Assuming coords[0] and coords[-1] are meant to be the start and stop arrays
+        start, stop = np.array(coords[0]), np.array(coords[-1])
         ratio = np.array(mov_mask.shape) / np.array(mov.shape)
-        # Ensure start and stop are arrays so they can be multiplied element-wise by the ratio
-        start = np.round(ratio * np.array(start)).astype(int)
-        stop = np.round(ratio * np.array(stop)).astype(int)
+        # Applying the ratio to start and stop
+        start = np.round(ratio * start).astype(int)
+        stop = np.round(ratio * stop).astype(int)
         # Creating slices for each dimension
         mask_crop = mov_mask[tuple(slice(s, e) for s, e in zip(start, stop))]
-        if np.any(mask_crop) > 0:
+        # Check for any non-zero element in the mask_crop
+        if np.any(mask_crop):
             non_empty_indices.append(index)
 
     return non_empty_indices
+
 
 
 
