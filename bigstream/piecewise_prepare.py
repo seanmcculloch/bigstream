@@ -237,7 +237,7 @@ def prepare_distributed_piecewise_alignment_pipeline(
     # with open('/results/pipeline_config.json', 'w') as f:
     #     json.dump(pipeline_config, f)    
 
-    non_empty_indices = get_non_empty_indices(indices, mov_mask)
+    non_empty_indices = get_non_empty_indices(indices, mov, mov_mask)
 
     indices_dict = {}
     
@@ -267,7 +267,7 @@ def prepare_distributed_piecewise_alignment_pipeline(
     # )
 
 
-def get_non_empty_indices(indices, mov_mask):
+def get_non_empty_indices(indices, mov, mov_mask):
     # determine the indices of the non-empty blocks in the moving image
     non_empty_indices = []
     for index, coords, neighbor_flags in indices:
