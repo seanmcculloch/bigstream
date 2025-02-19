@@ -268,24 +268,33 @@ def prepare_distributed_piecewise_alignment_pipeline(
 
 
 def get_non_empty_indices(indices, mov, mov_mask):
+    # Calculate the ratio for scaling just once
+    ratio = np.array(mov_mask.shape) / np.array(mov.shape)
+
     # Determine the indices of the non-empty blocks in the moving image
     non_empty_indices = []
     for index, coords, neighbor_flags in indices:
-        # Assuming coords[0] and coords[-1] are meant to be the start and stop arrays
-        print("coords", coords, type(coords), flush=True)
-    
-        start, stop = np.array(coords[0]), np.array(coords[-1])
-        ratio = np.array(mov_mask.shape) / np.array(mov.shape)
-        # Applying the ratio to start and stop
-        start = np.round(ratio * start).astype(int)
-        stop = np.round(ratio * stop).astype(int)
+        # Extract start and stop points from slices
+        starts = [s.start for s in coords]
+        stops = [s.stop for s in coords]
+
+        # Convert to numpy arrays
+        starts = np.array(starts)
+        stops = np.array(stops)
+
+        # Scale starts and stops according to the ratio
+        starts = np.round(ratio * starts).astype(int)
+        stops = np.round(ratio * stops).astype(int)
+
         # Creating slices for each dimension
-        mask_crop = mov_mask[tuple(slice(s, e) for s, e in zip(start, stop))]
+        mask_crop = mov_mask[tuple(slice(s, e) for s, e in zip(starts, stops))]
+
         # Check for any non-zero element in the mask_crop
         if np.any(mask_crop):
             non_empty_indices.append(index)
 
     return non_empty_indices
+
 
 
 
