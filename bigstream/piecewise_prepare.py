@@ -7,6 +7,7 @@ from bigstream.align import alignment_pipeline
 import time
 import json
 import pickle
+from tqdm import tqdm
 
 
 def serialize_slices(lst):
