@@ -239,6 +239,9 @@ def prepare_distributed_piecewise_alignment_pipeline(
 
     non_empty_indices = get_non_empty_indices(indices, mov, mov_mask)
 
+    print("Got non empty indices", flush=True)
+    print(non_empty_indices, flush=True)
+
     indices_dict = {}
     
     for i, indexed_config in enumerate(indices):
@@ -273,6 +276,9 @@ def get_non_empty_indices(indices, mov, mov_mask):
 
     # Determine the indices of the non-empty blocks in the moving image
     non_empty_indices = []
+
+    pbar = tqdm(total=len(indices), desc="Processing indices")
+
     for index, coords, neighbor_flags in indices:
         # Extract start and stop points from slices
         starts = [s.start for s in coords]
@@ -292,6 +298,12 @@ def get_non_empty_indices(indices, mov, mov_mask):
         # Check for any non-zero element in the mask_crop
         if np.any(mask_crop):
             non_empty_indices.append(index)
+
+        # Update the progress bar
+        pbar.update(1)
+
+    # Close the progress bar
+    pbar.close()
 
     return non_empty_indices
 
