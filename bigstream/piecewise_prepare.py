@@ -236,16 +236,22 @@ def prepare_distributed_piecewise_alignment_pipeline(
     # Save pipeline_config to a json file
     # with open('/results/pipeline_config.json', 'w') as f:
     #     json.dump(pipeline_config, f)    
+
+    non_empty_indices = get_non_empty_indices(indices, mov_mask)
+
     indices_dict = {}
     
     for i, indexed_config in enumerate(indices):
         #write to separate pkl files
-        indices_dict[str(i)] = indexed_config[1]
-        if not os.path.exists(output_dir +f'/distribute/{str(i)}'):
-            os.makedirs(output_dir + f'/distribute/{str(i)}')
-        
-        with open(output_dir + f'/distribute/{str(i)}/indices.pkl', 'wb') as f:
-            pickle.dump(indexed_config, f)
+
+        if i in non_empty_indices:
+
+            indices_dict[str(i)] = indexed_config[1]
+            if not os.path.exists(output_dir +f'/distribute/{str(i)}'):
+                os.makedirs(output_dir + f'/distribute/{str(i)}')
+            
+            with open(output_dir + f'/distribute/{str(i)}/indices.pkl', 'wb') as f:
+                pickle.dump(indexed_config, f)
     
     with open(output_dir +'/indices_dict.pkl', 'wb') as f:
         pickle.dump(indices_dict, f)              
@@ -261,6 +267,20 @@ def prepare_distributed_piecewise_alignment_pipeline(
     # )
 
 
+def get_non_empty_indices(indices, mov_mask):
+    # determine the indices of the non-empty blocks in the moving image
+    non_empty_indices = []
+    for index, coords, neighbor_flags in indices:
+        start = coords[0]
+        stop = coords[-1]
+        ratio = np.array(mov_mask.shape) / mov.shape
+        start = np.round( ratio * start ).astype(int)
+        stop = np.round( ratio * stop ).astype(int)
+        mask_crop = mov_mask[tuple(slice(a, b) for a, b in zip(start, stop))]
+        if np.sum(mask_crop) > 0:
+            non_empty_indices.append(index)
+
+    return non_empty_indices
 
 
 
