@@ -272,6 +272,8 @@ def get_non_empty_indices(indices, mov, mov_mask):
     non_empty_indices = []
     for index, coords, neighbor_flags in indices:
         # Assuming coords[0] and coords[-1] are meant to be the start and stop arrays
+        print("coords", coords, type(coords), flush=True)
+    
         start, stop = np.array(coords[0]), np.array(coords[-1])
         ratio = np.array(mov_mask.shape) / np.array(mov.shape)
         # Applying the ratio to start and stop
