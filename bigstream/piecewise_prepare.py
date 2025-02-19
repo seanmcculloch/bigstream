@@ -280,7 +280,7 @@ def get_non_empty_indices(indices, mov, mov_mask):
 
     pbar = tqdm(total=len(indices), desc="Processing indices")
 
-    for index, coords, neighbor_flags in indices:
+    for i, (index, coords, neighbor_flags) in enumerate(indices):
         # Extract start and stop points from slices
         starts = [s.start for s in coords]
         stops = [s.stop for s in coords]
@@ -298,7 +298,7 @@ def get_non_empty_indices(indices, mov, mov_mask):
 
         # Check for any non-zero element in the mask_crop
         if np.any(mask_crop):
-            non_empty_indices.append(index)
+            non_empty_indices.append(i)
 
         # Update the progress bar
         pbar.update(1)
