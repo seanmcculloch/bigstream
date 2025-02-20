@@ -244,6 +244,7 @@ def prepare_distributed_piecewise_alignment_pipeline(
     print(non_empty_indices, flush=True)
 
     indices_dict = {}
+    empty_indices_config_dict = {}
     
     for i, indexed_config in enumerate(indices):
         #write to separate pkl files
@@ -271,6 +272,14 @@ def prepare_distributed_piecewise_alignment_pipeline(
             
             with open(output_dir + f'/distribute/{str(i)}/indices.pkl', 'wb') as f:
                 pickle.dump(indexed_config, f)
+        else:
+            # add empty block to empty_indices_dict
+            empty_indices_config_dict[str(i)] = indexed_config
+
+
+        with open(output_dir +'/empty_indices_dict.pkl', 'wb') as f:
+            pickle.dump(empty_indices_config_dict, f)
+            
         # include block in indices_dict even if empty
         indices_dict[str(i)] = indexed_config[1]
 
