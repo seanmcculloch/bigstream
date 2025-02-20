@@ -265,7 +265,7 @@ def prepare_distributed_piecewise_alignment_pipeline(
                         print("neighbor block empty: ", neighbor_index, flush=True) 
                         neighbor_flags[neighbor] = False
 
-            indexed_config[2] = neighbor_flags  # update
+            indexed_config = (index, coords, neighbor_flags)  # update indexed_config with new neighbor_flags
             indices_dict[str(i)] = indexed_config[1]
             if not os.path.exists(output_dir +f'/distribute/{str(i)}'):
                 os.makedirs(output_dir + f'/distribute/{str(i)}')
