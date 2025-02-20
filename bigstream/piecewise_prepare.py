@@ -247,9 +247,25 @@ def prepare_distributed_piecewise_alignment_pipeline(
     
     for i, indexed_config in enumerate(indices):
         #write to separate pkl files
+        index, coords, neighbor_flags = indexed_config
 
-        if i in non_empty_indices:
+        print("i: ", i, flush=True)
+        if index in non_empty_indices:
+            
+            print("non empty index: ", index, flush=True)
+            # before writing indices file, update neighbor flags to exclude empty blocks
+            for neighbor in neighbor_flags:
+                
+                if neighbor_flags[neighbor]: # if expecting a neighbor block
+                    neighbor_index = tuple(np.array(index) + np.array(neighbor))
+                    print("expecting neighbor block: ", neighbor_index, flush=True)
 
+
+                    if neighbor_index not in non_empty_indices:
+                        print("neighbor block empty: ", neighbor_index, flush=True) 
+                        neighbor_flags[neighbor] = False
+
+            indexed_config[2] = neighbor_flags  # update
             indices_dict[str(i)] = indexed_config[1]
             if not os.path.exists(output_dir +f'/distribute/{str(i)}'):
                 os.makedirs(output_dir + f'/distribute/{str(i)}')
@@ -280,7 +296,8 @@ def get_non_empty_indices(indices, mov, mov_mask):
 
     pbar = tqdm(total=len(indices), desc="Processing indices")
 
-    for i, (index, coords, neighbor_flags) in enumerate(indices):
+    for indexed_config in indices:
+        index, coords, neighbor_flags = indexed_config
         # Extract start and stop points from slices
         starts = [s.start for s in coords]
         stops = [s.stop for s in coords]
@@ -298,7 +315,7 @@ def get_non_empty_indices(indices, mov, mov_mask):
 
         # Check for any non-zero element in the mask_crop
         if np.any(mask_crop):
-            non_empty_indices.append(i)
+            non_empty_indices.append(index)
 
         # Update the progress bar
         pbar.update(1)
