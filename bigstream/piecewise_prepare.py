@@ -253,20 +253,20 @@ def prepare_distributed_piecewise_alignment_pipeline(
         print("i: ", i, flush=True)
         if index in non_empty_indices:
             
-            print("non empty index: ", index, flush=True)
-            # before writing indices file, update neighbor flags to exclude empty blocks
-            for neighbor in neighbor_flags:
+            # print("non empty index: ", index, flush=True)
+            # # before writing indices file, update neighbor flags to exclude empty blocks
+            # for neighbor in neighbor_flags:
                 
-                if neighbor_flags[neighbor]: # if expecting a neighbor block
-                    neighbor_index = tuple(np.array(index) + np.array(neighbor))
-                    print("expecting neighbor block: ", neighbor_index, flush=True)
+            #     if neighbor_flags[neighbor]: # if expecting a neighbor block
+            #         neighbor_index = tuple(np.array(index) + np.array(neighbor))
+            #         print("expecting neighbor block: ", neighbor_index, flush=True)
 
 
-                    if neighbor_index not in non_empty_indices:
-                        print("neighbor block empty: ", neighbor_index, flush=True) 
-                        neighbor_flags[neighbor] = False
+            #         if neighbor_index not in non_empty_indices:
+            #             print("neighbor block empty: ", neighbor_index, flush=True) 
+            #             neighbor_flags[neighbor] = False
 
-            indexed_config = (index, coords, neighbor_flags)  # update indexed_config with new neighbor_flags
+            # indexed_config = (index, coords, neighbor_flags)  # update indexed_config with new neighbor_flags
             if not os.path.exists(output_dir +f'/distribute/{str(i)}'):
                 os.makedirs(output_dir + f'/distribute/{str(i)}')
             
