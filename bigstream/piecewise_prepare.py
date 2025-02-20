@@ -266,12 +266,14 @@ def prepare_distributed_piecewise_alignment_pipeline(
                         neighbor_flags[neighbor] = False
 
             indexed_config = (index, coords, neighbor_flags)  # update indexed_config with new neighbor_flags
-            indices_dict[str(i)] = indexed_config[1]
             if not os.path.exists(output_dir +f'/distribute/{str(i)}'):
                 os.makedirs(output_dir + f'/distribute/{str(i)}')
             
             with open(output_dir + f'/distribute/{str(i)}/indices.pkl', 'wb') as f:
                 pickle.dump(indexed_config, f)
+        # include block in indices_dict even if empty
+        indices_dict[str(i)] = indexed_config[1]
+
     
     with open(output_dir +'/indices_dict.pkl', 'wb') as f:
         pickle.dump(indices_dict, f)              
