@@ -19,7 +19,7 @@ setuptools.setup(
         'dask[array]>=2022.9.1',
         'dask[delayed]>=2022.9.1',
         'dask[distributed]>=2022.9.1',
-        'ClusterWrap>=0.3.0',
+        'ClusterWrap==0.3.2',
         'zarr>=2.12.0',
         'h5py>=3.8.0',
         'numcodecs>=0.9.1',
