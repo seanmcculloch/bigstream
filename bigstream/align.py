@@ -98,6 +98,8 @@ def feature_point_ransac_affine_align(
     mov_origin=None,
     static_transform_list=[],
     default=None,
+    fix_spots_save_path=None,
+    mov_spots_save_path=None,
     **kwargs,
 ):
     """
@@ -172,6 +174,12 @@ def feature_point_ransac_affine_align(
     default : 2d array 4x4 (default: None)
         A default transform to return if the method fails to find a valid one
 
+    fix_spots_save_path : str (default: None)
+        If not None, save the fixed spots to this path
+    
+    mov_spots_save_path : str (default: None)
+        If not None, save the moving spots to this path
+
     **kwargs : any additional keyword arguments
         Passed to cv2.estimateAffine3D
 
@@ -234,6 +242,11 @@ def feature_point_ransac_affine_align(
             **fix_kwargs,
         )
     print(f'found {len(fix_spots)} fixed spots')
+
+    # save spots if requested
+    if fix_spots_save_path is not None:
+        np.save(fix_spots_save_path, fix_spots)
+
     if len(fix_spots) < 100:
         print('insufficient fixed spots found, returning default', flush=True)
         return default
@@ -251,6 +264,11 @@ def feature_point_ransac_affine_align(
             mov, blob_sizes[0], blob_sizes[1],
             **mov_kwargs,
         )
+
+    # save spots if requested
+    if mov_spots_save_path is not None:
+        np.save(mov_spots_save_path, mov_spots)
+        
     print(f'found {len(mov_spots)} moving spots')
     if len(mov_spots) < 100:
         print('insufficient moving spots found, returning default', flush=True)

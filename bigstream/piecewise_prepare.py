@@ -7,6 +7,7 @@ from bigstream.align import alignment_pipeline
 import time
 import json
 import pickle
+from tqdm import tqdm
 
 
 def serialize_slices(lst):
@@ -236,16 +237,52 @@ def prepare_distributed_piecewise_alignment_pipeline(
     # Save pipeline_config to a json file
     # with open('/results/pipeline_config.json', 'w') as f:
     #     json.dump(pipeline_config, f)    
+
+    non_empty_indices = get_non_empty_indices(indices, mov, mov_mask)
+
+    print("Got non empty indices", flush=True)
+    print(non_empty_indices, flush=True)
+
     indices_dict = {}
+    empty_indices_config_dict = {}
     
     for i, indexed_config in enumerate(indices):
         #write to separate pkl files
+        index, coords, neighbor_flags = indexed_config
+
+        print("i: ", i, flush=True)
+        if index in non_empty_indices:
+            
+            # print("non empty index: ", index, flush=True)
+            # # before writing indices file, update neighbor flags to exclude empty blocks
+            # for neighbor in neighbor_flags:
+                
+            #     if neighbor_flags[neighbor]: # if expecting a neighbor block
+            #         neighbor_index = tuple(np.array(index) + np.array(neighbor))
+            #         print("expecting neighbor block: ", neighbor_index, flush=True)
+
+
+            #         if neighbor_index not in non_empty_indices:
+            #             print("neighbor block empty: ", neighbor_index, flush=True) 
+            #             neighbor_flags[neighbor] = False
+
+            # indexed_config = (index, coords, neighbor_flags)  # update indexed_config with new neighbor_flags
+            if not os.path.exists(output_dir +f'/distribute/{str(i)}'):
+                os.makedirs(output_dir + f'/distribute/{str(i)}')
+            
+            with open(output_dir + f'/distribute/{str(i)}/indices.pkl', 'wb') as f:
+                pickle.dump(indexed_config, f)
+        else:
+            # add empty block to empty_indices_dict
+            empty_indices_config_dict[str(i)] = indexed_config
+
+
+        with open(output_dir +'/empty_indices_dict.pkl', 'wb') as f:
+            pickle.dump(empty_indices_config_dict, f)
+            
+        # include block in indices_dict even if empty
         indices_dict[str(i)] = indexed_config[1]
-        if not os.path.exists(output_dir +f'/distribute/{str(i)}'):
-            os.makedirs(output_dir + f'/distribute/{str(i)}')
-        
-        with open(output_dir + f'/distribute/{str(i)}/indices.pkl', 'wb') as f:
-            pickle.dump(indexed_config, f)
+
     
     with open(output_dir +'/indices_dict.pkl', 'wb') as f:
         pickle.dump(indices_dict, f)              
@@ -259,6 +296,46 @@ def prepare_distributed_piecewise_alignment_pipeline(
     #     align_single_block, indices,
     #     static_transform_list=static_transform_list,
     # )
+
+
+def get_non_empty_indices(indices, mov, mov_mask):
+    # Calculate the ratio for scaling just once
+    ratio = np.array(mov_mask.shape) / np.array(mov.shape)
+
+    # Determine the indices of the non-empty blocks in the moving image
+    non_empty_indices = []
+
+    pbar = tqdm(total=len(indices), desc="Processing indices")
+
+    for indexed_config in indices:
+        index, coords, neighbor_flags = indexed_config
+        # Extract start and stop points from slices
+        starts = [s.start for s in coords]
+        stops = [s.stop for s in coords]
+
+        # Convert to numpy arrays
+        starts = np.array(starts)
+        stops = np.array(stops)
+
+        # Scale starts and stops according to the ratio
+        starts = np.round(ratio * starts).astype(int)
+        stops = np.round(ratio * stops).astype(int)
+
+        # Creating slices for each dimension
+        mask_crop = mov_mask[tuple(slice(s, e) for s, e in zip(starts, stops))]
+
+        # Check for any non-zero element in the mask_crop
+        if np.any(mask_crop):
+            non_empty_indices.append(index)
+
+        # Update the progress bar
+        pbar.update(1)
+
+    # Close the progress bar
+    pbar.close()
+
+    return non_empty_indices
+
 
 
 
